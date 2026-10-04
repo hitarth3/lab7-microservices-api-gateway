@@ -1,0 +1,273 @@
+{
+  "info": {
+    "_postman_id": "lab7-api-gateway-collection-2026",
+    "name": "Microservices – Lab 7 (API Gateway & Service Discovery)",
+    "description": "Complete Postman API test collection for Lab 7: API Gateway, Dynamic Configuration-Based Service Discovery, Resilient Error Handling, and Cloud Deployment.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string",
+      "description": "Base URL of the API Gateway (e.g. http://localhost:8080 for local or https://api-gateway.onrender.com for cloud)"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. API Gateway Health & Service Discovery Registry",
+      "item": [
+        {
+          "name": "GET /health (Gateway Health Check & Active Registry)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Verifies that the API Gateway is running, reports uptime, and exposes the dynamic routing table from environment variables."
+          }
+        },
+        {
+          "name": "GET /non-existent-route (Gateway 404 Fallback)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/non-existent-route",
+              "host": ["{{baseUrl}}"],
+              "path": ["non-existent-route"]
+            },
+            "description": "Verifies that routes not mapped to any microservice return a structured 404 with available endpoints list."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. User Service (Routed via Gateway /users)",
+      "item": [
+        {
+          "name": "GET /users (List All Users)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "GET /users/:id (Get User 101)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/101",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "101"]
+            }
+          }
+        },
+        {
+          "name": "POST /users (Create New Student)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"David Miller\",\n  \"email\": \"david.miller@campus.edu\",\n  \"department\": \"Cybersecurity\",\n  \"role\": \"student\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "PUT /users/:id (Update User 101 Department)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"department\": \"Applied AI & Systems Engineering\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/101",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "101"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Product Service (Routed via Gateway /products)",
+      "item": [
+        {
+          "name": "GET /products (List All Products)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"]
+            }
+          }
+        },
+        {
+          "name": "GET /products/:id (Get Product 501)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/products/501",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "501"]
+            }
+          }
+        },
+        {
+          "name": "POST /products (Create New Campus Catalog Item)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Wireless Presenter Remote with Laser Pointer\",\n  \"description\": \"Rechargeable ergonomic presentation clicker for lectures.\",\n  \"price\": 24.95,\n  \"stock\": 50,\n  \"category\": \"Electronics\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Order Service (Routed via Gateway /orders)",
+      "item": [
+        {
+          "name": "GET /orders (List All Orders)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"]
+            }
+          }
+        },
+        {
+          "name": "POST /orders [201 Success - Gateway -> Order -> User & Product]",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 101,\n  \"productId\": 501,\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"]
+            },
+            "description": "Cross-cutting integration: Client calls Gateway -> Gateway routes to Order Service -> Order Service verifies User (101) & Product (501) over Docker internal DNS -> Order persisted in MongoDB."
+          }
+        },
+        {
+          "name": "POST /orders [404 Invalid User Reference]",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 9999,\n  \"productId\": 501,\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"]
+            }
+          }
+        },
+        {
+          "name": "POST /orders [404 Invalid Product Reference]",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 101,\n  \"productId\": 9999,\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Gateway Centralized Error Handling (502/503 Tests)",
+      "item": [
+        {
+          "name": "GET /users [502 Bad Gateway - Unreachable Microservice]",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Executed when user-service container is stopped. Verifies that the API Gateway returns a structured 502 Bad Gateway error instead of hanging or crashing."
+          }
+        }
+      ]
+    }
+  ]
+}

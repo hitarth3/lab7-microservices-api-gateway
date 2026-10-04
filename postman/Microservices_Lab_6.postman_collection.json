@@ -1,0 +1,239 @@
+{
+  "info": {
+    "_postman_id": "c71a39ef-4bf2-411a-8299-4d649ab0e9a1",
+    "name": "Microservices – Lab 6",
+    "description": "Postman API test collection for Lab 6: Decomposing and Running Backend as Independent Microservices (User, Product, Order).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. User Service Direct Endpoints",
+      "item": [
+        {
+          "name": "GET /users (List All Users)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3001/users",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "GET /users/:id (Get User by Valid ID 101)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3001/users/101",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["users", "101"]
+            }
+          }
+        },
+        {
+          "name": "POST /users (Create New User)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Carol Davis\",\n  \"email\": \"carol.davis@campus.edu\",\n  \"department\": \"Software Engineering\",\n  \"role\": \"student\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3001/users",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "PUT /users/:id (Update User 101)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"department\": \"Artificial Intelligence & Data Science\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3001/users/101",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["users", "101"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Product Service Direct Endpoints",
+      "item": [
+        {
+          "name": "GET /products (List All Products)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/products",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3002",
+              "path": ["products"]
+            }
+          }
+        },
+        {
+          "name": "GET /products/:id (Get Product by Valid ID 501)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/products/501",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3002",
+              "path": ["products", "501"]
+            }
+          }
+        },
+        {
+          "name": "POST /products (Create New Product)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Scientific Graphing Calculator\",\n  \"description\": \"Approved for engineering exams\",\n  \"price\": 65.50,\n  \"stock\": 30,\n  \"category\": \"Electronics\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3002/products",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3002",
+              "path": ["products"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Order Service & Inter-Service Communication Tests",
+      "item": [
+        {
+          "name": "GET /orders (List All Orders)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3003/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["orders"]
+            }
+          }
+        },
+        {
+          "name": "POST /orders [201 Success - Inter-Service Call Order -> User & Product]",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 101,\n  \"productId\": 501,\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["orders"]
+            }
+          }
+        },
+        {
+          "name": "POST /orders [404 Invalid User ID Test]",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 9999,\n  \"productId\": 501,\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["orders"]
+            }
+          }
+        },
+        {
+          "name": "POST /orders [404 Invalid Product ID Test]",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 101,\n  \"productId\": 9999,\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["orders"]
+            }
+          }
+        },
+        {
+          "name": "POST /orders [503 Dependency Failure - User Service Stopped]",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 101,\n  \"productId\": 501,\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["orders"]
+            }
+          }
+        },
+        {
+          "name": "POST /orders [201 Dependency Recovery - User Service Restarted]",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 101,\n  \"productId\": 502,\n  \"quantity\": 3\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["orders"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

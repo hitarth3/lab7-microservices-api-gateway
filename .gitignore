@@ -1,0 +1,35 @@
+# Environment variables and secrets
+.env
+*.env
+express-api/.env
+student-client/.env
+*.env.local
+*.env.*.local
+
+# Node dependencies & logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+express-api/server.log
+
+# Build outputs
+student-client/dist/
+student-client/dist-ssr/
+*.local
+
+# Android / Gradle artifacts
+student-android/.gradle/
+student-android/build/
+student-android/*/build/
+student-android/local.properties
+student-android/.idea/
+student-android/.kotlin/
+*.apk
+*.aab
+
+# OS files
+.DS_Store
+Thumbs.db

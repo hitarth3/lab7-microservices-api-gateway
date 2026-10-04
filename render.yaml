@@ -1,0 +1,105 @@
+# ==============================================================================
+# Lab 7: Cloud Deployment Blueprint (Render Infrastructure as Code)
+# ==============================================================================
+# Deploys the CampusConnect microservices stack to Render cloud.
+# API Gateway is deployed as a Public Web Service.
+# User, Product, and Order services are deployed as Private Services or Web Services.
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Public API Gateway (Single Entry Point for Clients / Postman)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: campusconnect-api-gateway
+    env: docker
+    dockerfilePath: ./api-gateway/Dockerfile
+    dockerContext: ./api-gateway
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: NODE_ENV
+        value: production
+      - key: USER_SERVICE_URL
+        fromService:
+          type: web
+          name: campusconnect-user-service
+          property: host
+      - key: PRODUCT_SERVICE_URL
+        fromService:
+          type: web
+          name: campusconnect-product-service
+          property: host
+      - key: ORDER_SERVICE_URL
+        fromService:
+          type: web
+          name: campusconnect-order-service
+          property: host
+
+  # ----------------------------------------------------------------------------
+  # 2. User Microservice (Connected to MongoDB Atlas)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: campusconnect-user-service
+    env: docker
+    dockerfilePath: ./user-service/Dockerfile
+    dockerContext: ./user-service
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false # Set via Render dashboard to MongoDB Atlas URI
+
+  # ----------------------------------------------------------------------------
+  # 3. Product Microservice (Connected to MongoDB Atlas)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: campusconnect-product-service
+    env: docker
+    dockerfilePath: ./product-service/Dockerfile
+    dockerContext: ./product-service
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 3002
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false # Set via Render dashboard to MongoDB Atlas URI
+
+  # ----------------------------------------------------------------------------
+  # 4. Order Microservice (Connected to MongoDB Atlas + Inter-service URLs)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: campusconnect-order-service
+    env: docker
+    dockerfilePath: ./order-service/Dockerfile
+    dockerContext: ./order-service
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 3003
+      - key: NODE_ENV
+        value: production
+      - key: CALL_TIMEOUT_MS
+        value: 4000
+      - key: MONGO_URI
+        sync: false # Set via Render dashboard to MongoDB Atlas URI
+      - key: USER_SERVICE_URL
+        fromService:
+          type: web
+          name: campusconnect-user-service
+          property: host
+      - key: PRODUCT_SERVICE_URL
+        fromService:
+          type: web
+          name: campusconnect-product-service
+          property: host

@@ -1,0 +1,96 @@
+openapi: 3.0.3
+info:
+  title: Student Management API
+  version: 1.0.0
+  description: Production-ready RESTful Student Management API built with Express.js and MongoDB Atlas.
+servers:
+  - url: http://localhost:3000
+paths:
+  /students:
+    get:
+      summary: List students
+      tags: [Students]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+        '500': { description: Internal Server Error }
+    post:
+      summary: Create a student
+      tags: [Students]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '400':
+          description: Bad Request
+  /students/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: integer }
+    get:
+      summary: Get one student
+      tags: [Students]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '404': { description: Not Found }
+    put:
+      summary: Update a student
+      tags: [Students]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentInput'
+      responses:
+        '200':
+          description: OK
+        '400': { description: Bad Request }
+        '404': { description: Not Found }
+    delete:
+      summary: Delete a student
+      tags: [Students]
+      responses:
+        '204': { description: No Content }
+        '404': { description: Not Found }
+components:
+  schemas:
+    Student:
+      type: object
+      required: [id, name, email, course, semester]
+      properties:
+        id: { type: integer, example: 1 }
+        name: { type: string, example: Aarav Patel }
+        email: { type: string, format: email, example: aarav@example.com }
+        course: { type: string, example: Computer Science }
+        semester: { type: integer, minimum: 1, maximum: 8, example: 5 }
+    StudentInput:
+      type: object
+      required: [name, email, course, semester]
+      properties:
+        name: { type: string, example: Aarav Patel }
+        email: { type: string, format: email, example: aarav@example.com }
+        course: { type: string, example: Computer Science }
+        semester: { type: integer, minimum: 1, maximum: 8, example: 5 }
